@@ -59,11 +59,11 @@ imagesc(G3(1:step:end,1:step:end,:) + 2* G4(1:step:end,1:step:end,:) + 3*St(1:st
 
 
 %% Resources
-https://www.pathologyoutlines.com/topic/prostategrading.html
-https://www.humpath.com/spip.php?article18060
-https://www.mdpi.com/2072-6694/13/7/1524/htm
-https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6624635/
-https://www.webpathology.com/image.asp?n=24&Case=20
-https://www.google.com/search?q=gleason+score+pathology+outlines&tbm=isch&client=firefox-b-d&hl=en&sa=X&ved=2ahUKEwjf152d_-P3AhWH_IUKHZIWD5QQrNwCKAB6BQgBEOwB&biw=1264&bih=646#imgrc=GgCrrxm8KBqBCM
-https://www.google.com/search?q=prostate+glands+histology&client=firefox-b-d&tbm=isch&source=iu&ictx=1&vet=1&sa=X&ved=2ahUKEwj397SEneT3AhWCQEEAHVu0As8Q_h16BAgNEAk&biw=1281&bih=646&dpr=1.25#imgrc=56KYpG4c5Yf1nM
-https://www.youtube.com/watch?v=V_MrdEuNk7A  % Prostatic pathology
+% https://www.pathologyoutlines.com/topic/prostategrading.html
+% https://www.humpath.com/spip.php?article18060
+% https://www.mdpi.com/2072-6694/13/7/1524/htm
+% https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6624635/
+% https://www.webpathology.com/image.asp?n=24&Case=20
+% https://www.google.com/search?q=gleason+score+pathology+outlines&tbm=isch&client=firefox-b-d&hl=en&sa=X&ved=2ahUKEwjf152d_-P3AhWH_IUKHZIWD5QQrNwCKAB6BQgBEOwB&biw=1264&bih=646#imgrc=GgCrrxm8KBqBCM
+% https://www.google.com/search?q=prostate+glands+histology&client=firefox-b-d&tbm=isch&source=iu&ictx=1&vet=1&sa=X&ved=2ahUKEwj397SEneT3AhWCQEEAHVu0As8Q_h16BAgNEAk&biw=1281&bih=646&dpr=1.25#imgrc=56KYpG4c5Yf1nM
+% https://www.youtube.com/watch?v=V_MrdEuNk7A  % Prostatic pathology
