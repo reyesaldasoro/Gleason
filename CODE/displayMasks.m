@@ -12,81 +12,93 @@ for k=1:numFiles
 end
 
 %%
-currentFile                 = 5;
+currentFile                 = 8;
+step                        = 16;
+
 currentImageName            = strcat(baseDir,'Subset1_Train_',num2str( fileName_number(currentFile)),'.tiff');
-currentImageInfo            = imfinfo(currentName);
+currentImageInfo            = imfinfo(currentImageName);
 cols                        = currentImageInfo.Width;
 rows                        = currentImageInfo.Height;
 currentImage                = imread(currentImageName);
+currentImageR               = currentImage(1:step:end,1:step:end,:);
 
 locationMasks               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'*.tif');    
 allMasks                    = dir(locationMasks);
 
 %%
+rowsR       = numel(1:step:rows);
+colsR       = numel(1:step:cols);
+
 if ~isempty(strfind([allMasks.name],'G3'))
     currentG3               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G3_Mask.tif');
     G3                      = imread(currentG3);
+    G3R                     = G3(1:step:end,1:step:end,:);
 else
     disp('No mask for G3')
-    %G3                      = zeros(rows,cols);
+    G3R                      = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'G4'))
     currentG4               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G4_Mask.tif');
     G4                      = imread(currentG4);
+    G4R                     = G4(1:step:end,1:step:end,:);
 else
     disp('No mask for G4')
-    %G4                      = zeros(rows,cols);
+    G4R                      = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'G5'))
     currentG5               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G5_Mask.tif');
     G5                      = imread(currentG5);
+    G5R                     = G5(1:step:end,1:step:end,:);
 else
     disp('No mask for G5')
-    %G5                      = zeros(rows,cols);
+    G5R                      = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'Normal'))
     currentNo               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Normal_Mask.tif');
     Normal                  = imread(currentNo);
+    NormalR                 = Normal(1:step:end,1:step:end,:);
+
 else
     disp('No mask for Normal')
-    %Normal                  = zeros(rows,cols);
+    NormalR                  = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'Stroma'))
     currentSt               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Stroma_Mask.tif');
     Stroma                  = imread(currentSt);
+    StromaR                 = Stroma(1:step:end,1:step:end,:);
 else
-    %Stroma                  = zeros(rows,cols);
+    StromaR                  = zeros(rowsR,colsR);
     disp('No mask for Stroma')
 end
 
 
 
 %%
-step = 16;
+
 if ~isempty(strfind([allMasks.name],'G3'))
-    G3_edge =  imdilate(edge(G3(1:step:end,1:step:end,:),'canny'),ones(64/step));
+    G3_edge                 =  imdilate(edge(G3(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
-    G3_edge                 = zeros(rows,cols);
+    G3_edge                 = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'G4'))
     G4_edge                 =  imdilate(edge(G4(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
-    G4_edge                 = zeros(rows,cols);    
+    G4_edge                 = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'G5'))
     G5_edge                 =  imdilate(edge(G5(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
-    G5_edge                 = zeros(rows,cols);        
+    G5_edge                 = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'Normal'))
     Normal_edge             =  imdilate(edge(Normal(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
-    Normal_edge             = zeros(rows,cols);    
+    Normal_edge             = zeros(rowsR,colsR);
 end
 if ~isempty(strfind([allMasks.name],'Stroma'))
     Stroma_edge             =  imdilate(edge(Stroma(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
-    Stroma_edge             = zeros(rows,cols);    
+    Stroma_edge             = zeros(rowsR,colsR);
 end
 
 
@@ -105,19 +117,20 @@ end
 figure(2)
 imagesc(currentImage(1:step:end,1:step:end,:).*uint8(repmat(1-G4(1:step:end,1:step:end,:),[1 1 3])))
 %%
-step=4;
+figure(1)
+imagesc(currentImage)
 
 %all_edges = imdilate(G3_edge+G4_edge+Stroma_edge,ones(5));
 clear regions
-regions(:,:,1) = currentImage(1:step:end,1:step:end,1).*uint8(1-G3_edge);
-regions(:,:,2) = currentImage(1:step:end,1:step:end,2).*uint8(1-G4_edge);
-regions(:,:,3) = currentImage(1:step:end,1:step:end,3).*uint8(1-Stroma_edge);
+regions(:,:,1) = currentImageR(:,:,1).*uint8(1-G3_edge);
+regions(:,:,2) = currentImageR(:,:,2).*uint8(1-G4_edge);
+regions(:,:,3) = currentImageR(:,:,3).*uint8(1-Stroma_edge);
 
 figure(3)
 imagesc(regions)
 
 figure(4) 
-imagesc(G3(1:step:end,1:step:end,:) + 2* G4(1:step:end,1:step:end,:) + 3*Stroma(1:step:end,1:step:end,:))
+imagesc(G3R + 2* G4R + 3*G5R +4*StromaR + 5*NormalR)
 
 
 
