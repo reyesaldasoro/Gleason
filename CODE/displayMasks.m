@@ -13,48 +13,111 @@ end
 
 %%
 currentFile                 = 5;
-currentImage                = strcat(baseDir,'Subset1_Train_',num2str( fileName_number(currentFile)),'.tiff');
+currentImageName            = strcat(baseDir,'Subset1_Train_',num2str( fileName_number(currentFile)),'.tiff');
+currentImageInfo            = imfinfo(currentName);
+cols                        = currentImageInfo.Width;
+rows                        = currentImageInfo.Height;
+currentImage                = imread(currentImageName);
+
 locationMasks               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'*.tif');    
 allMasks                    = dir(locationMasks);
 
-currentG3                   = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G3_Mask.tif');
-currentG4                   = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G4_Mask.tif');
-currentG5                   = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G5_Mask.tif');
-currentNo                   = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Normal_Mask.tif');
-currentSt                   = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Stroma_Mask.tif');
+%%
+if ~isempty(strfind([allMasks.name],'G3'))
+    currentG3               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G3_Mask.tif');
+    G3                      = imread(currentG3);
+else
+    disp('No mask for G3')
+    %G3                      = zeros(rows,cols);
+end
+if ~isempty(strfind([allMasks.name],'G4'))
+    currentG4               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G4_Mask.tif');
+    G4                      = imread(currentG4);
+else
+    disp('No mask for G4')
+    %G4                      = zeros(rows,cols);
+end
+if ~isempty(strfind([allMasks.name],'G5'))
+    currentG5               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G5_Mask.tif');
+    G5                      = imread(currentG5);
+else
+    disp('No mask for G5')
+    %G5                      = zeros(rows,cols);
+end
+if ~isempty(strfind([allMasks.name],'Normal'))
+    currentNo               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Normal_Mask.tif');
+    Normal                  = imread(currentNo);
+else
+    disp('No mask for Normal')
+    %Normal                  = zeros(rows,cols);
+end
+if ~isempty(strfind([allMasks.name],'Stroma'))
+    currentSt               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'Stroma_Mask.tif');
+    Stroma                  = imread(currentSt);
+else
+    %Stroma                  = zeros(rows,cols);
+    disp('No mask for Stroma')
+end
+
+
+
+%%
+step = 16;
+if ~isempty(strfind([allMasks.name],'G3'))
+    G3_edge =  imdilate(edge(G3(1:step:end,1:step:end,:),'canny'),ones(64/step));
+else
+    G3_edge                 = zeros(rows,cols);
+end
+if ~isempty(strfind([allMasks.name],'G4'))
+    G4_edge                 =  imdilate(edge(G4(1:step:end,1:step:end,:),'canny'),ones(64/step));
+else
+    G4_edge                 = zeros(rows,cols);    
+end
+if ~isempty(strfind([allMasks.name],'G5'))
+    G5_edge                 =  imdilate(edge(G5(1:step:end,1:step:end,:),'canny'),ones(64/step));
+else
+    G5_edge                 = zeros(rows,cols);        
+end
+if ~isempty(strfind([allMasks.name],'Normal'))
+    Normal_edge             =  imdilate(edge(Normal(1:step:end,1:step:end,:),'canny'),ones(64/step));
+else
+    Normal_edge             = zeros(rows,cols);    
+end
+if ~isempty(strfind([allMasks.name],'Stroma'))
+    Stroma_edge             =  imdilate(edge(Stroma(1:step:end,1:step:end,:),'canny'),ones(64/step));
+else
+    Stroma_edge             = zeros(rows,cols);    
+end
+
+
 %%
 
-a   = imfinfo(currentName);
-b   = imread(currentName);
-G3  = imread(currentG3);
-G4  = imread(currentG4);
-St  = imread(currentSt);
+% b   = imread(currentName);
+% G3  = imread(currentG3);
+% G4  = imread(currentG4);
 
 % b=imread('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\Data\Subset1_Train_16.tiff');
 % G3=imread('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\Data\Subset1_Train_annotation\Train\Subset1_Train_16\G3_Mask.tif');
 % G4=imread('Subset1_Train_annotation\Train\Subset1_Train_16\G4_Mask.tif');
 % St=imread('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\Data\Subset1_Train_annotation\Train\Subset1_Train_16\Stroma_Mask.tif');
 %%
-step=16;
+
 figure(2)
-imagesc(b(1:step:end,1:step:end,:).*uint8(repmat(1-G4(1:step:end,1:step:end,:),[1 1 3])))
+imagesc(currentImage(1:step:end,1:step:end,:).*uint8(repmat(1-G4(1:step:end,1:step:end,:),[1 1 3])))
 %%
 step=4;
 
-G3_edge =  imdilate(edge(G3(1:step:end,1:step:end,:),'canny'),ones(64/step));
-G4_edge =  imdilate(edge(G4(1:step:end,1:step:end,:),'canny'),ones(64/step));
-St_edge =  imdilate(edge(St(1:step:end,1:step:end,:),'canny'),ones(64/step));
-%all_edges = imdilate(G3_edge+G4_edge+St_edge,ones(5));
+%all_edges = imdilate(G3_edge+G4_edge+Stroma_edge,ones(5));
 clear regions
-regions(:,:,1) = b(1:step:end,1:step:end,1).*uint8(1-G3_edge);
-regions(:,:,2) = b(1:step:end,1:step:end,2).*uint8(1-G4_edge);
-regions(:,:,3) = b(1:step:end,1:step:end,3).*uint8(1-St_edge);
+regions(:,:,1) = currentImage(1:step:end,1:step:end,1).*uint8(1-G3_edge);
+regions(:,:,2) = currentImage(1:step:end,1:step:end,2).*uint8(1-G4_edge);
+regions(:,:,3) = currentImage(1:step:end,1:step:end,3).*uint8(1-Stroma_edge);
 
 figure(3)
 imagesc(regions)
 
 figure(4) 
-imagesc(G3(1:step:end,1:step:end,:) + 2* G4(1:step:end,1:step:end,:) + 3*St(1:step:end,1:step:end,:))
+imagesc(G3(1:step:end,1:step:end,:) + 2* G4(1:step:end,1:step:end,:) + 3*Stroma(1:step:end,1:step:end,:))
 
 
 
@@ -71,5 +134,5 @@ imagesc(G3(1:step:end,1:step:end,:) + 2* G4(1:step:end,1:step:end,:) + 3*St(1:st
 % https://www.youtube.com/watch?v=9YuqsprhFm4  % Shotgun Histology Prostate
 % https://www.youtube.com/watch?v=lMeRg_V53G0  % Histology Of PROSTATE GLAND
 % https://www.youtube.com/watch?v=9ff-94Z5Ykc  % Prostate Cancer Pathology in 2021 | Jonathan Epstein, MD | PCRI 2021
-
+% https://www.osmosis.org/learn/Prostate_gland_histology 
 
