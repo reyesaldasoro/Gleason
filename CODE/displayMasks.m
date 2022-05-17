@@ -11,8 +11,13 @@ for k=1:numFiles
     fileName_number(k)      = str2double(dir0(k).name(15:end-5));
 end
 
+%% Times
+% read main image   ~ 1000 sec ~ 17 min
+% read masks        ~  170 sec ~  3 min
+% calculate edges   ~    3 sec
+
 %%
-currentFile                 = 15;
+currentFile                 = 16;
 step                        = 16;
 
 currentImageName            = strcat(baseDir,'Subset1_Train_',num2str( fileName_number(currentFile)),'.tiff');
@@ -115,12 +120,22 @@ t3=toc
 % G4=imread('Subset1_Train_annotation\Train\Subset1_Train_16\G4_Mask.tif');
 % St=imread('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\Data\Subset1_Train_annotation\Train\Subset1_Train_16\Stroma_Mask.tif');
 %%
-
-figure(2)
-imagesc(currentImage(1:step:end,1:step:end,:).*uint8(repmat(1-G4(1:step:end,1:step:end,:),[1 1 3])))
-%%
 figure(1)
 imagesc(currentImage)
+%%
+
+figure(2)
+subplot(231)
+imagesc(currentImageR.*uint8(repmat(G3R,[1 1 3])))
+subplot(232)
+imagesc(currentImageR.*uint8(repmat(G4R,[1 1 3])))
+subplot(233)
+imagesc(currentImageR.*uint8(repmat(G5R,[1 1 3])))
+subplot(234)
+imagesc(currentImageR.*uint8(repmat(StromaR,[1 1 3])))
+subplot(235)
+imagesc(currentImageR.*uint8(repmat(NormalR,[1 1 3])))
+
 %%
 %all_edges = imdilate(G3_edge+G4_edge+Stroma_edge,ones(5));
 clear regions
@@ -132,7 +147,7 @@ figure(3)
 imagesc(regions)
 %%
 figure(4) 
-imagesc(3*G3R + 4* G4R + 5*G5R +2*StromaR + 1*NormalR)
+imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R) + 5*G5R.*(1-NormalR).*(1-G4R) +2*StromaR + 1*NormalR)
 
 
 
