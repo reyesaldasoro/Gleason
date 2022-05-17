@@ -12,14 +12,16 @@ for k=1:numFiles
 end
 
 %%
-currentFile                 = 8;
+currentFile                 = 15;
 step                        = 16;
 
 currentImageName            = strcat(baseDir,'Subset1_Train_',num2str( fileName_number(currentFile)),'.tiff');
 currentImageInfo            = imfinfo(currentImageName);
 cols                        = currentImageInfo.Width;
 rows                        = currentImageInfo.Height;
+tic;
 currentImage                = imread(currentImageName);
+t1=toc
 currentImageR               = currentImage(1:step:end,1:step:end,:);
 
 locationMasks               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'*.tif');    
@@ -28,7 +30,7 @@ allMasks                    = dir(locationMasks);
 %%
 rowsR       = numel(1:step:rows);
 colsR       = numel(1:step:cols);
-
+tic;
 if ~isempty(strfind([allMasks.name],'G3'))
     currentG3               = strcat(baseDir,'Subset1_Train_annotation\Train\Subset1_Train_',num2str( fileName_number(currentFile)),filesep,'G3_Mask.tif');
     G3                      = imread(currentG3);
@@ -71,10 +73,10 @@ else
     disp('No mask for Stroma')
 end
 
-
+t2=toc
 
 %%
-
+tic;
 if ~isempty(strfind([allMasks.name],'G3'))
     G3_edge                 =  imdilate(edge(G3(1:step:end,1:step:end,:),'canny'),ones(64/step));
 else
@@ -100,7 +102,7 @@ if ~isempty(strfind([allMasks.name],'Stroma'))
 else
     Stroma_edge             = zeros(rowsR,colsR);
 end
-
+t3=toc
 
 %%
 
@@ -119,18 +121,18 @@ imagesc(currentImage(1:step:end,1:step:end,:).*uint8(repmat(1-G4(1:step:end,1:st
 %%
 figure(1)
 imagesc(currentImage)
-
+%%
 %all_edges = imdilate(G3_edge+G4_edge+Stroma_edge,ones(5));
 clear regions
-regions(:,:,1) = currentImageR(:,:,1).*uint8(1-G3_edge);
-regions(:,:,2) = currentImageR(:,:,2).*uint8(1-G4_edge);
-regions(:,:,3) = currentImageR(:,:,3).*uint8(1-Stroma_edge);
+regions(:,:,1) = currentImageR(:,:,1).*uint8(1-G3_edge).*uint8(1-G5_edge).*uint8(1-Normal_edge);
+regions(:,:,2) = currentImageR(:,:,2).*uint8(1-G4_edge).*uint8(1-Stroma_edge).*uint8(1-Normal_edge);
+regions(:,:,3) = currentImageR(:,:,3).*uint8(1-Stroma_edge).*uint8(1-G5_edge).*uint8(1-Normal_edge);
 
 figure(3)
 imagesc(regions)
-
+%%
 figure(4) 
-imagesc(G3R + 2* G4R + 3*G5R +4*StromaR + 5*NormalR)
+imagesc(3*G3R + 4* G4R + 5*G5R +2*StromaR + 1*NormalR)
 
 
 
