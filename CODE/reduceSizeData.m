@@ -23,7 +23,7 @@ end
 %%
 %currentFile                 = 18;
 step                        = 4;
-for currentFile=22:numFiles
+for currentFile=26:numFiles
     
     fileName                    = strcat('Subset',num2str(setSelected),'_Train_',num2str(fileName_number(currentFile)),'.tiff');
     currentImageName            = strcat(baseDir,fileName);
