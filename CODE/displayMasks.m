@@ -160,8 +160,15 @@ imagesc(regions)
 %%
 figure(4) 
 imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-
-
+%%
+caxis([0 5])
+jet3=[0 0 0;...
+    0.6    0.0    0.0  ;...
+    1.0    0.4    0 ;...
+    1.0    1.0    0.4 ;...
+    0.4    0.6    1.0 ;...
+    1.0    1.0    1.0 ];
+colormap(jet3)
 
 %% Resources
 % https://www.pathologyoutlines.com/topic/prostategrading.html
