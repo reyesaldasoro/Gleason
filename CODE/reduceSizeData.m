@@ -3,7 +3,7 @@ clear all
 close all
 cd ('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\CODE')
 %%
-setSelected                 = 1;
+setSelected                 = 3;
 baseDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\Data\';
 saveDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataR\';
 dir0                        = dir(strcat(baseDir,'Subset',num2str(setSelected),'_*.tiff'));
@@ -23,9 +23,9 @@ end
 %%
 %currentFile                 = 18;
 step                        = 4;
-for currentFile=26:numFiles
-    
-    fileName                    = strcat('Subset',num2str(setSelected),'_Train_',num2str(fileName_number(currentFile)),'.tiff');
+for currentFile=1:numFiles
+    fileName                    = dir0(currentFile).name;
+    %fileName                    = strcat('Subset',num2str(setSelected),'_Train_',num2str(fileName_number(currentFile)),'.tiff');
     currentImageName            = strcat(baseDir,fileName);
     currentImageInfo            = imfinfo(currentImageName);
     disp(currentImageName)
