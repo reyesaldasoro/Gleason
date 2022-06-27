@@ -23,7 +23,7 @@ end
 %%
 %currentFile                 = 18;
 step                        = 4;
-for currentFile=6:numFiles
+for currentFile=1:numFiles
     fileName                    = dirR(currentFile).name;
     pos_hyphens            = strfind(fileName,'_');
     scannerType                 = fileName(pos_hyphens(3)+1:pos_hyphens(4)-1);
@@ -83,5 +83,5 @@ for currentFile=6:numFiles
         StromaR                  = zeros(rowsR,colsR);
         disp('No mask for Stroma')
     end
-    %save( strcat(saveDir,fileName(1:end-5),'_R.mat'),'currentImageR','G3R','G4R','G5R','NormalR','StromaR','-v7.3')
+    save( strcat(saveDir,fileName(1:end-5),'_R.mat'),'currentImageR','G3R','G4R','G5R','NormalR','StromaR','-v7.3')
 end
