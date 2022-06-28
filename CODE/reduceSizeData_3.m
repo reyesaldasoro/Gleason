@@ -23,7 +23,7 @@ end
 %%
 %currentFile                 = 18;
 step                        = 4;
-for currentFile=1:numFiles
+for currentFile=17:numFiles
     fileName                    = dirR(currentFile).name;
     pos_hyphens            = strfind(fileName,'_');
     scannerType                 = fileName(pos_hyphens(3)+1:pos_hyphens(4)-1);
