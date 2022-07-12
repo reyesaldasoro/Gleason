@@ -5,10 +5,18 @@ function [backgroundMask,innerWhite] = detectBackground(currentImage)
 % operators
 % Will not run with full resolution, reduce size
 data_hsv            = rgb2hsv(currentImage);
+%% Black regions on edges
+% There are some images that contain black regions, select from value
+strelElement1        = strel('disk',15);
+strelElement2        = strel('disk',20);
+black_background     = imclose(imopen(data_hsv(:,:,3)<0.3,strelElement2),strelElement1);
+
 %% select regions with low saturation 
-low_sat             = 0.5*graythresh((data_hsv(:,:,2)));
-data_lowSat         = data_hsv(:,:,2)<low_sat;
-data_lowSat1        =  bwmorph(bwmorph(bwmorph(data_lowSat,'majority'),'majority'),'majority');
+low_sat             = graythresh((data_hsv(:,:,2)));
+data_lowSat         = data_hsv(:,:,2)<( 0.75*low_sat);
+data_lowSat1        =  (bwmorph(bwmorph(data_lowSat,'majority'),'majority'));
+data_lowSat2        = (imfilter(data_hsv(:,:,2),ones(3)/9))<low_sat;
+%data_lowSat1        =  bwmorph(bwmorph(bwmorph(data_lowSat,'majority'),'majority'),'majority');
 %imagesc(data_lowSat1)
 %%
 % Label to keep large regions
@@ -26,11 +34,11 @@ inEdges = unique([unique( data_lowSat_Large([1:5 end-4:end] ,:));unique(data_low
 inEdges(inEdges==0)=[];
 %%
 backgroundMask1      = (imclose(ismember(data_lowSat_Large,inEdges),strel('disk',40)));
-backgroundMask      = imerode(backgroundMask1,strel('disk',20));
+backgroundMask      = imerode(backgroundMask1,strel('disk',20))| black_background;
 %% Now detect the inner white regions, potentially the regions of normal tissue
 
 %discard whites that overlap with background before erosion
-numSmall            =  max(data_lowSat_Small(:));
+numSmall            = max(data_lowSat_Small(:));
 notInBackground     = unique(data_lowSat_Small.*(1-backgroundMask1));
 inBackground        = unique(data_lowSat_Small.*(backgroundMask1));
 notInBack           = setdiff(1:numSmall,inBackground);
@@ -41,5 +49,5 @@ innerWhite_P        = regionprops(innerWhite_0,'area','BoundingBox','MinoraxisLe
 % margins?
 avAreaSmall         =  mean([innerWhite_P.Area]);
 stdAreaSmall        =  std([innerWhite_P.Area]);
-innerWhite=0;
-imagesc(backgroundMask+backgroundMask1)
+innerWhite=innerWhite_0;
+%imagesc(backgroundMask+backgroundMask1)
