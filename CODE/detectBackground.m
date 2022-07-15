@@ -11,6 +11,8 @@ strelElement1        = strel('disk',15);
 strelElement2        = strel('disk',20);
 black_background     = imclose(imopen(data_hsv(:,:,3)<0.3,strelElement2),strelElement1);
 
+%% H & E chromatic region 
+H_E_chromatic       = data_hsv(:,:,1)>0.6;
 %% select regions with low saturation 
 low_sat             = graythresh((data_hsv(:,:,2)));
 data_lowSat         = data_hsv(:,:,2)<( 0.75*low_sat);
