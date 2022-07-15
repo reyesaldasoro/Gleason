@@ -26,6 +26,9 @@ numFiles                    = length (dirall);
 % step                        = 2;
 
 %%
+
+h1=gcf;
+h1.Position =[  490  300  960  400];
 for currentFile=1: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
