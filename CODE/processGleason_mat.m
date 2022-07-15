@@ -3,37 +3,31 @@ close all
 cd ('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\CODE')
 %%
 baseDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataR\';
-%saveDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataPng\';
+saveDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataBackground\';
 %dir0                        = dir(strcat(baseDir,'Subset',num2str(setSelected),'_*.mat'));
 dirall                      = dir(strcat(baseDir,'*_*.mat'));
 numFiles                    = length (dirall);
 
-%step                        = 1;
-sizeEdge                    = 64;
-
-
-jet3=[0 0 0;...
-    0.6    0.0    0.0  ;...
-    1.0    0.4    0 ;...
-    1.0    1.0    0.4 ;...
-    0.5    0.9    1.0 ;...
-    1.0    1.0    1.0 ];
+%sizeEdge                    = 64;
 
 
 
-%%
-currentFile=1;
-currentImageName                = dirall(currentFile).name;
-disp(currentImageName)
-currentImageNamePath            = strcat(baseDir,currentImageName);
 
-load(currentImageNamePath);
-%%
+
+%
+% currentFile=121;
+% currentImageName                = dirall(currentFile).name;
+% disp(currentImageName)
+% currentImageNamePath            = strcat(baseDir,currentImageName);
+% 
+% load(currentImageNamePath);
+% 
+% [backgroundMask,innerWhite] = detectBackground(currentImageR);
+% step                        = 2;
 
 %%
-for currentFile=143: numFiles
+for currentFile=1: numFiles
     %currentFile                     = 219;
-    clear G3* G4* G5* Stroma* Normal* currentImageR
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
     currentImageNamePath            = strcat(baseDir,currentImageName);
@@ -42,38 +36,21 @@ for currentFile=143: numFiles
     [rows,cols,~]               = size(currentImageR);
     
     if (rows>30000)|(cols>30000)
-        step=2;
-        currentImageR=currentImageR(1:step:end,1:step:end,:);
-        G3R = G3R(1:step:end,1:step:end,:);
-        G4R = G4R(1:step:end,1:step:end,:);
-        G5R = G5R(1:step:end,1:step:end,:);
-        NormalR = NormalR(1:step:end,1:step:end,:);
-        StromaR = StromaR(1:step:end,1:step:end,:);
-        
-        step=1;
+        currentImageR=currentImageR(1:2:end,1:2:end,:);
     end
+    [backgroundMask,innerWhite] = detectBackground(currentImageR(1:2:end,1:2:end,:));
         
-    
-    
-    G3_edge                 =  imdilate(edge(G3R(1:step:end,1:step:end,:),'canny'),ones(sizeEdge/step));
-    G4_edge                 =  imdilate(edge(G4R(1:step:end,1:step:end,:),'canny'),ones(sizeEdge/step));
-    G5_edge                 =  imdilate(edge(G5R(1:step:end,1:step:end,:),'canny'),ones(sizeEdge/step));
-    Normal_edge             =  imdilate(edge(NormalR(1:step:end,1:step:end,:),'canny'),ones(sizeEdge/step));
-    Stroma_edge             =  imdilate(edge(StromaR(1:step:end,1:step:end,:),'canny'),ones(sizeEdge/step));
-    
-    clear regions
-    regions(:,:,1) = currentImageR(:,:,1).*uint8(1-G3_edge).*uint8(1-G5_edge).*uint8(1-Normal_edge);
-    regions(:,:,2) = currentImageR(:,:,2).*uint8(1-G4_edge).*uint8(1-Stroma_edge).*uint8(1-Normal_edge);
-    regions(:,:,3) = currentImageR(:,:,3).*uint8(1-Stroma_edge).*uint8(1-G5_edge).*uint8(1-Normal_edge);
     
     figure(13)
     h1=subplot(121);
-   % title()
-    imagesc(regions)
+    % title()
+    imagesc(currentImageR(1:2:end,1:2:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
+    %     imagesc(regions)
     h2=subplot(122);
-    imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    caxis([0 5])
-    colormap(jet3)
+    %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
+    imagesc(currentImageR(1:2:end,1:2:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
+    %caxis([0 5])
+    %colormap(jet3)
     
     h1.Position=[0.05 0.09 0.44 0.85];
     h2.Position=[0.55 0.09 0.44 0.85];
