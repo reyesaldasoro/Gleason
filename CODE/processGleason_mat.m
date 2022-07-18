@@ -29,7 +29,7 @@ numFiles                    = length (dirall);
 
 h1=gcf;
 h1.Position =[  490  300  960  400];
-for currentFile=1: numFiles
+for currentFile=222: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -41,24 +41,41 @@ for currentFile=1: numFiles
     if (rows>30000)|(cols>30000)
         currentImageR=currentImageR(1:2:end,1:2:end,:);
     end
-    [backgroundMask,innerWhite] = detectBackground(currentImageR(1:2:end,1:2:end,:));
+    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
         
     
-    figure(13)
-    h1=subplot(121);
+    h13=figure(14);
+    h1=subplot(141);
     % title()
-    imagesc(currentImageR(1:2:end,1:2:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
     %     imagesc(regions)
-    h2=subplot(122);
+    h2=subplot(142);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    imagesc(currentImageR(1:2:end,1:2:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
+    h3=subplot(143);
+    %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerTissue),[1 1 3]))
+    h4=subplot(144);
+    %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))    
     %caxis([0 5])
     %colormap(jet3)
     
-    h1.Position=[0.05 0.09 0.44 0.85];
-    h2.Position=[0.55 0.09 0.44 0.85];
-    h1.FontSize=7;
-    h2.FontSize=7;
+%%
+hWidth = 0.21;
+    h13.Position    = [600  120  900  400];
+    h1.Position     = [0.03 0.09 hWidth 0.85];
+    h2.Position     = [0.28 0.09 hWidth 0.85];
+    h3.Position     = [0.53 0.09 hWidth 0.85];
+    h4.Position     = [0.78 0.09 hWidth 0.85];
+   
+    
+    h1.FontSize     = 7;
+    h2.FontSize     = 7;
+    h3.FontSize     = 7;
+    h4.FontSize     = 7;
+    
+%%    
     h1.Title.String = currentImageName;
     h1.Title.Interpreter='none';
     print('-dpng','-r200',currentImageNamePathS)
