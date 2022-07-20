@@ -41,8 +41,8 @@ for currentFile= 105: numFiles
     if (rows>30000)|(cols>30000)
         currentImageR=currentImageR(1:2:end,1:2:end,:);
     end
-    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
-        
+%    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
+    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectClasses(currentImageR);   
     
     h13=figure(14);
     h1=subplot(141);
