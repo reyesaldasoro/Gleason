@@ -80,10 +80,21 @@ region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
 % G3/G4/G5 are easier to define as they have a majority of blue and nothing
 % else so it is G>0.3
 region_G            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_G);
-G345                =region_G>0.3;
+G345_low            = bwlabel(region_G>0.3);
+G345_high           = bwlabel(region_G>0.6);
+G345_inBoth         = unique(G345_low.*(G345_high>0));
+G345_both           = ismember(G345_low,G345_inBoth(2:end));
+G345_filled         = imfill(G345_both,'holes');
+G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
+%figure(21);imagesc(currentImage.*uint8(repmat(region_G345,[1 1 3])))
+%figure(22);imagesc(currentImage.*uint8(repmat(1-region_G345,[1 1 3])))
+
 % Stroma regions are those with a high percentage of pink S>0,75, but far from
 % normal previously defined 
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
+
+
+
 
 imagesc(innerWhite3*2+blue_purple );
 % % Label to keep large regions
