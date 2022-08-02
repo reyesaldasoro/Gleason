@@ -42,7 +42,7 @@ for currentFile= 105: numFiles
         currentImageR=currentImageR(1:2:end,1:2:end,:);
     end
 %    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
-    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectClasses(currentImageR);   
+    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue,finalMask] = detectClasses(currentImageR);   
     
     h13=figure(14);
     h1=subplot(141);
