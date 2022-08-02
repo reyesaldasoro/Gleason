@@ -55,12 +55,15 @@ innerWhite1         = bwmorph(backgroundMask4.*(1-H_E_chromatic_highSat),'majori
 innerWhite2_P       = regionprops(innerWhite2,'area');
 % remove small specks and those that touch background
 %notTouchBackground  = setdiff((1:numW), unique((backgroundMask3).*innerWhite2));
-largeSpecks         = find([innerWhite2_P.Area]>10);
+largeSpecks         = find([innerWhite2_P.Area]>500);
 %largestSpecks       = find([innerWhite2_P.Area]>10);
 %innerWhite3         = ismember(innerWhite2,intersect(largeSpecks,notTouchBackground));
 
 innerWhite3         = ismember(innerWhite2,largeSpecks);
 innerWhite          = innerWhite3;
+
+%%
+
 innerTissue         = (1-innerWhite3).*backgroundMask4;
 %%
 % Normal is the regions where there is white surrounded by blue/purple
@@ -92,9 +95,62 @@ G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
 % Stroma regions are those with a high percentage of pink S>0,75, but far from
 % normal previously defined 
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
+Stroma_final        = (region_S>0.8).*(1-G345_final);
 
+counterReg = 8813;
+clear isNormal;
+isNormal(numW,1) = 0;
+[innerWhite_L,numW] = bwlabel(innerWhite);
+innerWhite_P        = regionprops(innerWhite_L);
+for counterReg = 1:numW
+    %    counterReg = 624;
+    if  innerWhite_P(counterReg).Area<40000
+        disp(counterReg)
+        margin          = 20;
+        rStart          = max(1,-margin+innerWhite_P(counterReg).BoundingBox(2));
+        rFin            = min(rows,2*margin+rStart+innerWhite_P(counterReg).BoundingBox(4));
+        cStart          = max(1,-margin+innerWhite_P(counterReg).BoundingBox(1));
+        cFin            = min(rows,2*margin+cStart+innerWhite_P(counterReg).BoundingBox(3));
+        rr = round(rStart:rFin);
+        cc = round(cStart:cFin);
+        
+        % should not be close to G345
+        if ( sum(sum(G345_final(rr,cc)))==0)
+            candidateGland  = innerWhite_L(rr,cc)==counterReg;
+            candidateBlue   = imdilate(candidateGland,ones(21));
+            blueSurround    = sum(sum((candidateBlue-candidateGland).*blue_purple(rr,cc)))/ sum(sum((candidateBlue-candidateGland)));
+            stromaSurround  = sum(sum(pink_purple(rr,cc)))/sum(sum(1-innerWhite(rr,cc)));
+            backgroundSurr  = sum(sum(1-backgroundMask(rr,cc)))/numel(rr)/numel(cc);
+            
+            % Conditions to be normal:
+            % backgroundSurr<0.01  not on the edge of the tissue
+            % 0.1 <blueSurround < 0.25  surrounded by a circle of cells, not too many
+            % stromaSurround>0.5
+            
+            if (backgroundSurr<0.01)
+                if (stromaSurround>0.5)
+                    if (blueSurround>0.05)&(blueSurround<0.5)
+                        isNormal(counterReg) = 1;
+                    end
+                end
+            end
+        end
+    end
+end
+%final condition, normals should be surrounded by normals
 
-
+figure(9)
+imagesc(innerWhite+ismember(innerWhite_L,find(isNormal(1:end))))
+%%
+kkk=1;
+figure(1)
+imagesc(currentImage(rr,cc,:))
+figure(2)
+imagesc(currentImage.*uint8(repmat(imerode(innerWhite_L~=counterReg,ones(190)),[1 1 3])  ))
+figure(3)
+imagesc(pink_purple(rr,cc)+innerWhite(rr,cc)*2+blue_purple(rr,cc)*3)
+title(strcat('Blue = ',num2str(blueSurround),', Str=',num2str(stromaSurround),', Bac=',num2str(backgroundSurr)))
+%%
 
 imagesc(innerWhite3*2+blue_purple );
 % % Label to keep large regions
