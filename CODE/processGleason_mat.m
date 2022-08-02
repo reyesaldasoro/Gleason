@@ -3,7 +3,7 @@ close all
 cd ('C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\CODE')
 %%
 baseDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataR\';
-saveDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataBackground\';
+saveDir                     = 'C:\Users\sbbk034\OneDrive - City, University of London\Documents\GitHub\Gleason\DataClasses\';
 %dir0                        = dir(strcat(baseDir,'Subset',num2str(setSelected),'_*.mat'));
 dirall                      = dir(strcat(baseDir,'*_*.mat'));
 numFiles                    = length (dirall);
@@ -28,8 +28,8 @@ numFiles                    = length (dirall);
 %%
 
 h1=gcf;
-h1.Position =[  490  300  960  400];
-for currentFile= 105: numFiles
+h1.Position =[  90  300  660  400];
+for currentFile= 20 %3: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -43,39 +43,62 @@ for currentFile= 105: numFiles
     end
 %    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
     [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue,finalMask] = detectClasses(currentImageR);   
-    
-    h13=figure(14);
-    h1=subplot(141);
-    % title()
+    %
+    h13=figure(15);
+    h1=subplot(241);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
+    title('Background')
     %     imagesc(regions)
-    h2=subplot(142);
+    h2=subplot(242);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
-    h3=subplot(143);
+    h3=subplot(243);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerTissue),[1 1 3]))
-    h4=subplot(144);
+    h4=subplot(244);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))    
-    %caxis([0 5])
-    %colormap(jet3)
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))  
     
-%%
+    h5=subplot(245);
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==1),[1 1 3]))  
+    title('Normal')
+    h6=subplot(246);
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==2),[1 1 3]))  
+    title('Stroma')
+    h7=subplot(247);
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==3),[1 1 3]))  
+    title('G3,G4,G5')
+    h8=subplot(248);
+    imagesc(finalMask)
+    
+    
+    
+    caxis([0 3])
+    colormap(jet)
+    
+%
 hWidth = 0.21;
-    h13.Position    = [600  120  900  400];
-    h1.Position     = [0.03 0.09 hWidth 0.85];
-    h2.Position     = [0.28 0.09 hWidth 0.85];
-    h3.Position     = [0.53 0.09 hWidth 0.85];
-    h4.Position     = [0.78 0.09 hWidth 0.85];
+hHeight = 0.43;
+   % h13.Position    = [600  120  900  400];
+    h1.Position     = [0.03 0.55 hWidth hHeight];
+    h2.Position     = [0.28 0.55 hWidth hHeight];
+    h3.Position     = [0.53 0.55 hWidth hHeight];
+    h4.Position     = [0.78 0.55 hWidth hHeight];
+    h5.Position     = [0.03 0.05 hWidth hHeight];
+    h6.Position     = [0.28 0.05 hWidth hHeight];
+    h7.Position     = [0.53 0.05 hWidth hHeight];
+    h8.Position     = [0.78 0.05 hWidth hHeight];
    
     
     h1.FontSize     = 7;
     h2.FontSize     = 7;
     h3.FontSize     = 7;
     h4.FontSize     = 7;
-    
-%%    
+    h5.FontSize     = 7;
+    h6.FontSize     = 7;
+    h7.FontSize     = 7;
+    h8.FontSize     = 7;
+%    
     h1.Title.String = currentImageName;
     h1.Title.Interpreter='none';
     print('-dpng','-r200',currentImageNamePathS)
