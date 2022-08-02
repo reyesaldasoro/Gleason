@@ -26,7 +26,13 @@ strelElement1        = strel('disk',25);
 strelElement2        = strel('disk',50);
 H_E_chromatic_highSat = H_E_chromatic.*(1-data_lowSat);
 % H_E_chromatic_highSatL = bwlabel(H_E_chromatic_highSat);
-H_E_chromatic_highSat2 =  imopen(imclose(H_E_chromatic_highSat,strelElement1),strelElement2);
+%tic;
+%H_E_chromatic_highSat2 =  imopen(imclose(H_E_chromatic_highSat,strelElement1),strelElement2);
+%t1=toc;
+%tic;
+H_E_chromatic_highSat2 =  (imclose(H_E_chromatic_highSat,strelElement1));
+%t2=toc;
+%[t1 t2]
 backgroundMask1      = (H_E_chromatic_highSat2)| black_background;
 backgroundMask_L     = bwlabel(1-backgroundMask1);
 backgroundMask_LP    = regionprops(backgroundMask_L,'area');
@@ -84,14 +90,14 @@ region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
 % else so it is G>0.3
 %
 region_G            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_G);
-G345_low            = bwlabel(region_G>0.18);imagesc(G345_low)
-G345_high           = bwlabel(region_G>0.30);imagesc(G345_high)
+G345_low            = bwlabel(region_G>0.18);%imagesc(G345_low)
+G345_high           = bwlabel(region_G>0.30);%imagesc(G345_high)
 G345_inBoth         = unique(G345_low.*(G345_high>0));
 G345_both           = ismember(G345_low,G345_inBoth(2:end));
 G345_filled         = imfill(G345_both,'holes');
 G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
-figure(21);imagesc(currentImage.*uint8(repmat(G345_final,[1 1 3])))
-figure(22);imagesc(currentImage.*uint8(repmat(1-G345_final,[1 1 3])))
+%figure(21);imagesc(currentImage.*uint8(repmat(G345_final,[1 1 3])))
+%figure(22);imagesc(currentImage.*uint8(repmat(1-G345_final,[1 1 3])))
 
 % Stroma regions are those with a high percentage of pink S>0,75, but far from
 % normal previously defined 
@@ -148,7 +154,8 @@ normal_blurr        = (imfilter(double(candidate_normal),ones(500)/500/500));
 normal_final        = normal_blurr>0.15;
 
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
-Stroma_final        = (region_S>0.8).*(1-G345_final).*(1-normal_final);
+Stroma_blurr        = imfilter(double((region_S>0.75).*(1-G345_final).*(1-normal_final)),ones(500)/500/500);
+Stroma_final        = Stroma_blurr>0.10;
 finalMask           = normal_final+3*G345_final+2*Stroma_final;
 %  figure(9)
 %  imagesc(normal_final+2*G345_final+3*Stroma_final)
