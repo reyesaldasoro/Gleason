@@ -94,8 +94,7 @@ G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
 
 % Stroma regions are those with a high percentage of pink S>0,75, but far from
 % normal previously defined 
-region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
-Stroma_final        = (region_S>0.8).*(1-G345_final);
+
 
 counterReg = 8813;
 clear isNormal;
@@ -138,9 +137,15 @@ for counterReg = 1:numW
     end
 end
 %final condition, normals should be surrounded by normals
+candidate_normal    = ismember(innerWhite_L,find(isNormal(1:end)));
+normal_blurr        = (imfilter(double(candidate_normal),ones(500)/500/500));
+normal_final        = normal_blurr>0.15;
+
+region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
+Stroma_final        = (region_S>0.8).*(1-G345_final).*(1-normal_final);
 
 figure(9)
-imagesc(innerWhite+ismember(innerWhite_L,find(isNormal(1:end))))
+imagesc(normal_final+2*G345_final+3*Stroma_final)
 %%
 kkk=1;
 figure(1)
