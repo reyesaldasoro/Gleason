@@ -29,7 +29,7 @@ numFiles                    = length (dirall);
 
 h1=gcf;
 h1.Position =[  90  300  660  400];
-for currentFile= 20 %3: numFiles
+for currentFile= 1: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
