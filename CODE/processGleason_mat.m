@@ -52,13 +52,16 @@ for currentFile= 1: numFiles
     h2=subplot(242);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
+    
     h3=subplot(243);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerTissue),[1 1 3]))
+    %imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerTissue),[1 1 3]))
+    imagesc(currentImageR(1:1:end,1:1:end,:))
     h4=subplot(244);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))  
-    
+    %imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))  
+    imagesc((NormalR + 2*StromaR + 3*G3R + 4* G4R + 5*G5R))
+    caxis([0 5])
     h5=subplot(245);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==1),[1 1 3]))  
     title('Normal')
@@ -70,15 +73,14 @@ for currentFile= 1: numFiles
     title('G3,G4,G5')
     h8=subplot(248);
     imagesc(finalMask)
+    caxis([0 5])
     
     
-    
-    caxis([0 3])
-    colormap(jet)
+   colormap(jet)
     
 %
 hWidth = 0.21;
-hHeight = 0.43;
+hHeight = 0.41;
    % h13.Position    = [600  120  900  400];
     h1.Position     = [0.03 0.55 hWidth hHeight];
     h2.Position     = [0.28 0.55 hWidth hHeight];
@@ -101,7 +103,7 @@ hHeight = 0.43;
 %    
     h1.Title.String = currentImageName;
     h1.Title.Interpreter='none';
-    print('-dpng','-r200',currentImageNamePathS)
+    print('-dpng','-r300',currentImageNamePathS)
 end
 %% Resources
 % https://www.pathologyoutlines.com/topic/prostategrading.html
