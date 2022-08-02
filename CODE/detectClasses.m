@@ -1,4 +1,4 @@
-function [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectClasses(currentImage)
+function [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue,finalMask] = detectClasses(currentImage)
 
 %%
 % Find the background through a combination of saturation and morphological
@@ -96,7 +96,7 @@ G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
 % normal previously defined 
 
 
-counterReg = 8813;
+% counterReg = 8813;
 clear isNormal;
 isNormal(numW,1) = 0;
 [innerWhite_L,numW] = bwlabel(innerWhite);
@@ -104,7 +104,7 @@ innerWhite_P        = regionprops(innerWhite_L);
 for counterReg = 1:numW
     %    counterReg = 624;
     if  innerWhite_P(counterReg).Area<40000
-        disp(counterReg)
+        %disp(counterReg)
         margin          = 20;
         rStart          = max(1,-margin+innerWhite_P(counterReg).BoundingBox(2));
         rFin            = min(rows,2*margin+rStart+innerWhite_P(counterReg).BoundingBox(4));
@@ -143,21 +143,21 @@ normal_final        = normal_blurr>0.15;
 
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
 Stroma_final        = (region_S>0.8).*(1-G345_final).*(1-normal_final);
-
-figure(9)
-imagesc(normal_final+2*G345_final+3*Stroma_final)
+finalMask           = normal_final+3*G345_final+2*Stroma_final;
+% figure(9)
+% imagesc(normal_final+2*G345_final+3*Stroma_final)
 %%
-kkk=1;
-figure(1)
-imagesc(currentImage(rr,cc,:))
-figure(2)
-imagesc(currentImage.*uint8(repmat(imerode(innerWhite_L~=counterReg,ones(190)),[1 1 3])  ))
-figure(3)
-imagesc(pink_purple(rr,cc)+innerWhite(rr,cc)*2+blue_purple(rr,cc)*3)
-title(strcat('Blue = ',num2str(blueSurround),', Str=',num2str(stromaSurround),', Bac=',num2str(backgroundSurr)))
-%%
-
-imagesc(innerWhite3*2+blue_purple );
+% kkk=1;
+% figure(1)
+% imagesc(currentImage(rr,cc,:))
+% figure(2)
+% imagesc(currentImage.*uint8(repmat(imerode(innerWhite_L~=counterReg,ones(190)),[1 1 3])  ))
+% figure(3)
+% imagesc(pink_purple(rr,cc)+innerWhite(rr,cc)*2+blue_purple(rr,cc)*3)
+% title(strcat('Blue = ',num2str(blueSurround),', Str=',num2str(stromaSurround),', Bac=',num2str(backgroundSurr)))
+% %%
+% 
+% imagesc(innerWhite3*2+blue_purple );
 % % Label to keep large regions
 % data_lowSat_L       = bwlabel(data_lowSat1);
 % data_lowSat_P       = regionprops(data_lowSat1,'area','BoundingBox');
