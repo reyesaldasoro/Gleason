@@ -67,8 +67,8 @@ innerWhite          = innerWhite3;
 innerTissue         = (1-innerWhite3).*backgroundMask4;
 %%
 % Normal is the regions where there is white surrounded by blue/purple
-blue_purple         = innerTissue.*H_E_chromatic_highSat.*(data_hsv(:,:,1)>0.55).*(data_hsv(:,:,1)<0.75);
-pink_purple         = innerTissue.*H_E_chromatic_highSat.*(data_hsv(:,:,1)>0.75).*(data_hsv(:,:,1)<0.90);
+blue_purple         = innerTissue.*H_E_chromatic_highSat.*(data_hsv(:,:,1)>0.55).*(data_hsv(:,:,1)<=0.79);
+pink_purple         = innerTissue.*H_E_chromatic_highSat.*(data_hsv(:,:,1)>0.79).*(data_hsv(:,:,1)<0.90);
 
 sizeRegion          = 64;
 regionsCombined     = ((innerWhite3*1+2*blue_purple+3*pink_purple) );
@@ -82,37 +82,43 @@ region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
 
 % G3/G4/G5 are easier to define as they have a majority of blue and nothing
 % else so it is G>0.3
+%
 region_G            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_G);
-G345_low            = bwlabel(region_G>0.3);
-G345_high           = bwlabel(region_G>0.6);
+G345_low            = bwlabel(region_G>0.18);imagesc(G345_low)
+G345_high           = bwlabel(region_G>0.30);imagesc(G345_high)
 G345_inBoth         = unique(G345_low.*(G345_high>0));
 G345_both           = ismember(G345_low,G345_inBoth(2:end));
 G345_filled         = imfill(G345_both,'holes');
 G345_final          = backgroundMask.*imdilate(G345_filled,strelElement1);
-%figure(21);imagesc(currentImage.*uint8(repmat(region_G345,[1 1 3])))
-%figure(22);imagesc(currentImage.*uint8(repmat(1-region_G345,[1 1 3])))
+figure(21);imagesc(currentImage.*uint8(repmat(G345_final,[1 1 3])))
+figure(22);imagesc(currentImage.*uint8(repmat(1-G345_final,[1 1 3])))
 
 % Stroma regions are those with a high percentage of pink S>0,75, but far from
 % normal previously defined 
 
-
+%
 % counterReg = 8813;
 clear isNormal;
 isNormal(numW,1) = 0;
 [innerWhite_L,numW] = bwlabel(innerWhite);
 innerWhite_P        = regionprops(innerWhite_L);
 for counterReg = 1:numW
-    %    counterReg = 624;
+       % counterReg = 2436;
     if  innerWhite_P(counterReg).Area<40000
         %disp(counterReg)
         margin          = 20;
         rStart          = max(1,-margin+innerWhite_P(counterReg).BoundingBox(2));
         rFin            = min(rows,2*margin+rStart+innerWhite_P(counterReg).BoundingBox(4));
         cStart          = max(1,-margin+innerWhite_P(counterReg).BoundingBox(1));
-        cFin            = min(rows,2*margin+cStart+innerWhite_P(counterReg).BoundingBox(3));
+        cFin            = min(cols,2*margin+cStart+innerWhite_P(counterReg).BoundingBox(3));
         rr = round(rStart:rFin);
         cc = round(cStart:cFin);
-        
+%         try 
+%             qq=sum(sum(G345_final(rr,cc)));
+%         catch
+%             qq=1;
+%         end
+            
         % should not be close to G345
         if ( sum(sum(G345_final(rr,cc)))==0)
             candidateGland  = innerWhite_L(rr,cc)==counterReg;
@@ -128,7 +134,7 @@ for counterReg = 1:numW
             
             if (backgroundSurr<0.01)
                 if (stromaSurround>0.5)
-                    if (blueSurround>0.05)&(blueSurround<0.5)
+                    if (blueSurround>0.04)&(blueSurround<0.5)
                         isNormal(counterReg) = 1;
                     end
                 end
@@ -144,18 +150,18 @@ normal_final        = normal_blurr>0.15;
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
 Stroma_final        = (region_S>0.8).*(1-G345_final).*(1-normal_final);
 finalMask           = normal_final+3*G345_final+2*Stroma_final;
-% figure(9)
-% imagesc(normal_final+2*G345_final+3*Stroma_final)
-%%
-% kkk=1;
+%  figure(9)
+%  imagesc(normal_final+2*G345_final+3*Stroma_final)
+
+%  kkk=1;
 % figure(1)
 % imagesc(currentImage(rr,cc,:))
 % figure(2)
 % imagesc(currentImage.*uint8(repmat(imerode(innerWhite_L~=counterReg,ones(190)),[1 1 3])  ))
-% figure(3)
-% imagesc(pink_purple(rr,cc)+innerWhite(rr,cc)*2+blue_purple(rr,cc)*3)
-% title(strcat('Blue = ',num2str(blueSurround),', Str=',num2str(stromaSurround),', Bac=',num2str(backgroundSurr)))
-% %%
+%     figure(3)
+%     imagesc(pink_purple(rr,cc)+innerWhite(rr,cc)*2+blue_purple(rr,cc)*3)
+%     title(strcat('Blue = ',num2str(blueSurround),', Str=',num2str(stromaSurround),', Bac=',num2str(backgroundSurr)))
+%%
 % 
 % imagesc(innerWhite3*2+blue_purple );
 % % Label to keep large regions
