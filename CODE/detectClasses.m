@@ -156,16 +156,16 @@ end
 %final condition, normals should be surrounded by normals
 candidate_normal    = ismember(innerWhite_L,find(isNormal(1:end)));
 normal_blurr        = (imfilter(double(candidate_normal),ones(500)/500/500));
-normal_final        = normal_blurr>0.15;
+normal_final        = (normal_blurr>0.15).*(1-G345_final);
 
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
 Stroma_blurr        = imfilter(double((region_S>0.75).*(1-G345_final).*(1-normal_final)),ones(500)/500/500);
-Stroma_final        = Stroma_blurr>0.10;
+Stroma_final        = (Stroma_blurr>0.10).*(1-G345_final).*(1-normal_final);
 finalMask           = normal_final+3*G345_final+2*Stroma_final;
-  figure(9)
-  imagesc(normal_final+2*G345_final+3*Stroma_final)
-
-  kkk=1;
+%   figure(8)
+%   imagesc(finalMask)
+% 
+%   kkk=1;
 % figure(1)
 % imagesc(currentImage(rr,cc,:))
 % figure(2)
