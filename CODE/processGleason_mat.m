@@ -94,24 +94,20 @@ for currentFile= 1: numFiles
     caxis([0 5])
     h5=subplot(245);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==1),[1 1 3]))  
-    title('Normal')
+    title(strcat('Normal, F1 =',num2str(F1_N)))
     h6=subplot(246);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==2),[1 1 3]))  
-    title('Stroma')
+    title(strcat('Stroma, F1 =',num2str(F1_S)))
     h7=subplot(247);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==3),[1 1 3]))  
-    title('G3,G4,G5')
+    title(strcat('G3,G4,G5, F1 =',num2str(F1_G3)))
     h8=subplot(248);
     imagesc(finalMask)
     caxis([0 5])
-     title(strcat('F1 = ',num2str(F1)))
-   
-    
-   colormap(jet)
-    
-%
-hWidth = 0.21;
-hHeight = 0.41;
+    title(strcat('F1 = ',num2str(F1)))
+    colormap(jet)
+    hWidth = 0.21;
+    hHeight = 0.41;
    % h13.Position    = [600  120  900  400];
     h1.Position     = [0.03 0.55 hWidth hHeight];
     h2.Position     = [0.28 0.55 hWidth hHeight];
@@ -135,6 +131,7 @@ hHeight = 0.41;
     h1.Title.String = currentImageName;
     h1.Title.Interpreter='none';
     print('-dpng','-r300',currentImageNamePathS)
+    Final_F(currentFile,:) = [  F1_N  F1_S  F1_G3 F1_G4 F1_G5 F1];
 end
 %% Resources
 % https://www.pathologyoutlines.com/topic/prostategrading.html
