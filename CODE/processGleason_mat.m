@@ -29,7 +29,7 @@ numFiles                    = length (dirall);
 
 h1=gcf;
 h1.Position =[  90  300  660  400];
-for currentFile= 1: numFiles
+for currentFile= 105 %1: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -38,7 +38,9 @@ for currentFile= 1: numFiles
     load(currentImageNamePath);
     [rows,cols,~]               = size(currentImageR);
     
-    if (rows>30000)|(cols>30000)
+    if (rows>40000)|(cols>40000)
+        currentImageR=currentImageR(1:4:end,1:4:end,:);
+    elseif (rows>30000)|(cols>30000)
         currentImageR=currentImageR(1:2:end,1:2:end,:);
     end
 %    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
