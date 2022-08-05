@@ -29,7 +29,7 @@ numFiles                    = length (dirall);
 
 h1=gcf;
 h1.Position =[  90  300  660  400];
-for currentFile= 105 %1: numFiles
+for currentFile= 1: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -45,6 +45,34 @@ for currentFile= 105 %1: numFiles
     end
 %    [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue] = detectBackground(currentImageR(1:1:end,1:1:end,:));
     [backgroundMask,innerWhite,innerTissue,meanBackground,meanTissue,finalMask] = detectClasses(currentImageR);   
+    % Calculate F1 per class
+    % First all true positives
+    TP_N    = sum(sum(NormalR.*(finalMask==1)));
+    TP_S    = sum(sum(StromaR.*(finalMask==2)));
+    TP_G3   = sum(sum(G3R.*(finalMask==3)));
+    TP_G4   = sum(sum(G4R.*(finalMask==4)));
+    TP_G5   = sum(sum(G5R.*(finalMask==5)));
+    % False Negatives
+    FN_N    = sum(sum(NormalR.*(finalMask~=1)));
+    FN_S    = sum(sum(NormalR.*(finalMask~=2)));
+    FN_G3   = sum(sum(NormalR.*(finalMask~=3)));
+    FN_G4   = sum(sum(NormalR.*(finalMask~=4)));
+    FN_G5   = sum(sum(NormalR.*(finalMask~=5)));
+    % False Positives
+    FP_N    = sum(sum((StromaR+G3R+G4R+G5R).*(finalMask~=1)));
+    FP_S    = sum(sum((NormalR+G3R+G4R+G5R).*(finalMask~=2)));
+    FP_G3   = sum(sum((StromaR+NormalR+G4R+G5R).*(finalMask~=3)));
+    FP_G4   = sum(sum((StromaR+G3R+NormalR+G5R).*(finalMask~=4)));
+    FP_G5   = sum(sum((StromaR+G3R+G4R+NormalR).*(finalMask~=5)));
+   
+    F1_N    = TP_N/(TP_N+0.5*FP_N + 0.5*FN_N);
+    F1_S    = TP_S/(TP_S+0.5*FP_S + 0.5*FN_S);    
+    F1_G3   = TP_G3/(TP_G3+0.5*FP_G3 + 0.5*FN_G3);   
+    F1_G4   = TP_G4/(TP_G4+0.5*FP_G4 + 0.5*FN_G4);
+    F1_G5   = TP_G5/(TP_G5+0.5*FP_G5 + 0.5*FN_G5);
+    
+    F1      = 0.125* F1_N + 0.125* F1_S + 0.25 * F1_G3+ 0.25 * F1_G4+ 0.25 * F1_G5;
+    
     %
     h13=figure(15);
     h1=subplot(241);
@@ -76,7 +104,8 @@ for currentFile= 105 %1: numFiles
     h8=subplot(248);
     imagesc(finalMask)
     caxis([0 5])
-    
+     title(strcat('F1 = ',num2str(F1)))
+   
     
    colormap(jet)
     
