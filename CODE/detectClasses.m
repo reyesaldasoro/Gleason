@@ -87,11 +87,16 @@ f_S                 = @(block_struct) (sum(sum(block_struct.data==3)))/numel(blo
 region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
 
 % G3/G4/G5 are easier to define as they have a majority of blue and nothing
-% else so it is G>0.3
-%
+% else so it is G>0.3 But this may change between images
+% Find limits with order statistics
 region_G            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_G);
-G345_low            = bwlabel(region_G>0.18);%imagesc(G345_low)
-G345_high           = bwlabel(region_G>0.30);%imagesc(G345_high)
+distGvalues         = sort(region_G(:));
+lowerG              = distGvalues(round(0.9*numel(distGvalues)));
+upperG              = distGvalues(round(0.97*numel(distGvalues)));
+
+
+G345_low            = bwlabel(region_G>lowerG);%imagesc(G345_low)
+G345_high           = bwlabel(region_G>upperG);%imagesc(G345_high)
 G345_inBoth         = unique(G345_low.*(G345_high>0));
 G345_both           = ismember(G345_low,G345_inBoth(2:end));
 G345_filled         = imfill(G345_both,'holes');
@@ -157,10 +162,10 @@ region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
 Stroma_blurr        = imfilter(double((region_S>0.75).*(1-G345_final).*(1-normal_final)),ones(500)/500/500);
 Stroma_final        = Stroma_blurr>0.10;
 finalMask           = normal_final+3*G345_final+2*Stroma_final;
-%  figure(9)
-%  imagesc(normal_final+2*G345_final+3*Stroma_final)
+  figure(9)
+  imagesc(normal_final+2*G345_final+3*Stroma_final)
 
-%  kkk=1;
+  kkk=1;
 % figure(1)
 % imagesc(currentImage(rr,cc,:))
 % figure(2)
