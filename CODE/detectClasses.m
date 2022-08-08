@@ -164,11 +164,13 @@ Stroma_final        = (Stroma_blurr>0.10).*(1-G345_final).*(1-normal_final);
 
 
 % G5 will be regions of G where there is no inner white or very little
-G345_L              = bwlabel(G345_final);
+[G345_L,numG]       = bwlabel(G345_final);
 G345_P              = regionprops(G345_L,'Area');
 G345_White          = G345_L.*innerWhite;
 G345_WP             = regionprops(G345_White,'Area');
-propInnerWhite      =([G345_WP.Area]./[G345_P.Area])';
+propInnerWhite      =zeros(numG,1);
+present_WP          = unique(G345_White);
+propInnerWhite(present_WP(2:end))      =([G345_WP(present_WP(2:end)).Area]./[G345_P(present_WP(2:end)).Area])';
 G5_final            = ismember(G345_L,find(propInnerWhite<0.01));
 G3_final            = ismember(G345_L,find(propInnerWhite>0.1));
 G4_final            = G345_final-G5_final-G3_final;
