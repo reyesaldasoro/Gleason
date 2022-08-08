@@ -27,9 +27,9 @@ numFiles                    = length (dirall);
 
 %%
 
-h1=gcf;
-h1.Position =[  90  300  660  400];
-for currentFile= 1: numFiles
+h0=gcf;
+h0.Position =[  90  100  900  500];
+for currentFile= 2: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -74,33 +74,47 @@ for currentFile= 1: numFiles
     F1      = 0.125* F1_N + 0.125* F1_S + 0.25 * F1_G3+ 0.25 * F1_G4+ 0.25 * F1_G5;
     
     %
-    h13=figure(15);
+   % h13=figure(15);
     h1=subplot(241);
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
-    title('Background')
+    imagesc(currentImageR(1:1:end,1:1:end,:))
+    title('Original')
+    
+%    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(1-backgroundMask),[1 1 3]))
+%    title('Background')
     %     imagesc(regions)
     h2=subplot(242);
-    %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
-    
+    %imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
+    %imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(backgroundMask),[1 1 3]))
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==1),[1 1 3]))  
+    title(strcat('Normal, F1 =',num2str(F1_N)))
+     
     h3=subplot(243);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
     %imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerTissue),[1 1 3]))
-    imagesc(currentImageR(1:1:end,1:1:end,:))
+    %imagesc(currentImageR(1:1:end,1:1:end,:))
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==2),[1 1 3]))  
+    title(strcat('Stroma, F1 =',num2str(F1_S)))
+    
+  
     h4=subplot(244);
     %     imagesc(3*G3R + 4* G4R.*(1-NormalR).*(1-G5R).*(1-G3R) + 5*G5R.*(1-NormalR).*(1-G4R).*(1-G3R) +2*StromaR.*(1-G4R).*(1-G3R) + 1*NormalR)
     %imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(innerWhite),[1 1 3]))  
     imagesc((NormalR + 2*StromaR + 3*G3R + 4* G4R + 5*G5R))
     caxis([0 5])
+    
     h5=subplot(245);
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==1),[1 1 3]))  
-    title(strcat('Normal, F1 =',num2str(F1_N)))
-    h6=subplot(246);
-    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==2),[1 1 3]))  
-    title(strcat('Stroma, F1 =',num2str(F1_S)))
-    h7=subplot(247);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==3),[1 1 3]))  
-    title(strcat('G3,G4,G5, F1 =',num2str(F1_G3)))
+    title(strcat('G3, F1 =',num2str(F1_N)))
+    
+    h6=subplot(246);
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==4),[1 1 3]))  
+    title(strcat('G4 F1 =',num2str(F1_G4)))
+    
+    
+    h7=subplot(247);
+    imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==5),[1 1 3]))  
+    title(strcat('G5 F1 =',num2str(F1_G5)))
+
     h8=subplot(248);
     imagesc(finalMask)
     caxis([0 5])
@@ -130,7 +144,7 @@ for currentFile= 1: numFiles
 %    
     h1.Title.String = currentImageName;
     h1.Title.Interpreter='none';
-    print('-dpng','-r300',currentImageNamePathS)
+    print('-dpng','-r500',currentImageNamePathS)
     Final_F(currentFile,:) = [  F1_N  F1_S  F1_G3 F1_G4 F1_G5 F1];
 end
 %% Resources
