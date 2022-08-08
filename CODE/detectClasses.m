@@ -161,7 +161,19 @@ normal_final        = (normal_blurr>0.15).*(1-G345_final);
 region_S            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_S);
 Stroma_blurr        = imfilter(double((region_S>0.75).*(1-G345_final).*(1-normal_final)),ones(500)/500/500);
 Stroma_final        = (Stroma_blurr>0.10).*(1-G345_final).*(1-normal_final);
-finalMask           = normal_final+3*G345_final+2*Stroma_final;
+
+
+% G5 will be regions of G where there is no inner white or very little
+G345_L              = bwlabel(G345_final);
+G345_P              = regionprops(G345_L,'Area');
+G345_White          = G345_L.*innerWhite;
+G345_WP             = regionprops(G345_White,'Area');
+propInnerWhite      =([G345_WP.Area]./[G345_P.Area])';
+G5_final            = ismember(G345_L,find(propInnerWhite<0.01));
+G3_final            = ismember(G345_L,find(propInnerWhite>0.1));
+G4_final            = G345_final-G5_final-G3_final;
+
+finalMask           = normal_final+2*Stroma_final+3*G3_final+4*G4_final+5*G5_final;
 %   figure(8)
 %   imagesc(finalMask)
 % 
