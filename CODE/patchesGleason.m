@@ -11,7 +11,7 @@ numFiles                    = length (dirall);
 
 %%
 
-for currentFile= 143:1: numFiles
+for currentFile= 24%:1: numFiles
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
     currentImageNamePath            = strcat(baseDir,currentImageName);
