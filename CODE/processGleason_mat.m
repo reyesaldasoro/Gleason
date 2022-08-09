@@ -29,7 +29,7 @@ numFiles                    = length (dirall);
 
 h0=gcf;
 h0.Position =[  90  100  900  500];
-for currentFile= 2: numFiles
+for currentFile= 15% 2: numFiles
     %currentFile                     = 219;
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
@@ -49,24 +49,24 @@ for currentFile= 2: numFiles
     % First all true positives
     TP_N    = sum(sum(NormalR.*(finalMask==1)));
     TP_S    = sum(sum(StromaR.*(finalMask==2)));
-    TP_G3   = sum(sum(G3R.*(finalMask==3)));
-    TP_G4   = sum(sum(G4R.*(finalMask==4)));
-    TP_G5   = sum(sum(G5R.*(finalMask==5)));
+    TP_G3   = sum(sum(    G3R.*(finalMask==3)));
+    TP_G4   = sum(sum(    G4R.*(finalMask==4)));
+    TP_G5   = sum(sum(    G5R.*(finalMask==5)));
     % False Negatives
     FN_N    = sum(sum(NormalR.*(finalMask~=1)));
-    FN_S    = sum(sum(NormalR.*(finalMask~=2)));
-    FN_G3   = sum(sum(NormalR.*(finalMask~=3)));
-    FN_G4   = sum(sum(NormalR.*(finalMask~=4)));
-    FN_G5   = sum(sum(NormalR.*(finalMask~=5)));
+    FN_S    = sum(sum(StromaR.*(finalMask~=2)));
+    FN_G3   = sum(sum(    G3R.*(finalMask~=3)));
+    FN_G4   = sum(sum(    G4R.*(finalMask~=4)));
+    FN_G5   = sum(sum(    G5R.*(finalMask~=5)));
     % False Positives
-    FP_N    = sum(sum((StromaR+G3R+G4R+G5R).*(finalMask~=1)));
-    FP_S    = sum(sum((NormalR+G3R+G4R+G5R).*(finalMask~=2)));
+    FP_N    = sum(sum(    (StromaR+G3R+G4R+G5R).*(finalMask~=1)));
+    FP_S    = sum(sum(    (NormalR+G3R+G4R+G5R).*(finalMask~=2)));
     FP_G3   = sum(sum((StromaR+NormalR+G4R+G5R).*(finalMask~=3)));
     FP_G4   = sum(sum((StromaR+G3R+NormalR+G5R).*(finalMask~=4)));
     FP_G5   = sum(sum((StromaR+G3R+G4R+NormalR).*(finalMask~=5)));
    
-    F1_N    = TP_N/(TP_N+0.5*FP_N + 0.5*FN_N);
-    F1_S    = TP_S/(TP_S+0.5*FP_S + 0.5*FN_S);    
+    F1_N    = TP_N /(TP_N+0.5*FP_N   + 0.5*FN_N);
+    F1_S    = TP_S /(TP_S+0.5*FP_S   + 0.5*FN_S);    
     F1_G3   = TP_G3/(TP_G3+0.5*FP_G3 + 0.5*FN_G3);   
     F1_G4   = TP_G4/(TP_G4+0.5*FP_G4 + 0.5*FN_G4);
     F1_G5   = TP_G5/(TP_G5+0.5*FP_G5 + 0.5*FN_G5);
@@ -104,7 +104,7 @@ for currentFile= 2: numFiles
     
     h5=subplot(245);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==3),[1 1 3]))  
-    title(strcat('G3, F1 =',num2str(F1_N)))
+    title(strcat('G3, F1 =',num2str(F1_G3)))
     
     h6=subplot(246);
     imagesc(currentImageR(1:1:end,1:1:end,:).*repmat(uint8(finalMask==4),[1 1 3]))  
