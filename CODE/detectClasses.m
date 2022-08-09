@@ -79,12 +79,12 @@ pink_purple         = innerTissue.*H_E_chromatic_highSat.*(data_hsv(:,:,1)>0.79)
 sizeRegion          = 64;
 regionsCombined     = ((innerWhite3*1+2*blue_purple+3*pink_purple) );
 f_G                 = @(block_struct) (sum(sum(block_struct.data==2)))/numel(block_struct.data) * ones(size(block_struct.data));
-f_N                 = @(block_struct) (sum(sum(block_struct.data==1)))/numel(block_struct.data) * ones(size(block_struct.data));
+%f_N                 = @(block_struct) (sum(sum(block_struct.data==1)))/numel(block_struct.data) * ones(size(block_struct.data));
 f_S                 = @(block_struct) (sum(sum(block_struct.data==3)))/numel(block_struct.data) * ones(size(block_struct.data));
 % This defines the normal regions, which are predominantly white but
 % surrounded by pink and blue, thus the percentage has to be 0.4<n<0.8 PLUS
 % it has to be far from the background
-region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
+%region_N            = blockproc(regionsCombined,[sizeRegion sizeRegion],f_N);
 
 % G3/G4/G5 are easier to define as they have a majority of blue and nothing
 % else so it is G>0.3 But this may change between images
