@@ -15,7 +15,7 @@ for currentFile= 24%:1: numFiles
     currentImageName                = dirall(currentFile).name;
     disp(currentImageName)
     currentImageNamePath            = strcat(baseDir,currentImageName);
-    currentImageNamePathS           = strcat(saveDir,currentImageName(1:end-3),'png');
+   % currentImageNamePathS           = strcat(saveDir,currentImageName(1:end-3),'png');
     load(currentImageNamePath);
     [rows,cols,~]               = size(currentImageR);
     
