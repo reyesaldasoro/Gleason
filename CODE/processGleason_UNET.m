@@ -44,7 +44,7 @@ imds2                       = imageDatastore(labelDir);
 
 
 %% U-Net definition and training
-numClasses                  = 5 ;
+numClasses                  = 6 ;
 
 % The class names are a sequence of options for the classes, e.g.
 % classNames = ["T1","T2","T3","T4","T5"];
@@ -66,9 +66,9 @@ trainingData                = pixelLabelImageDatastore(imds,pxds);
 % Create  U-Net
 typeEncoder        = 'adam';
 imageSize           = [sizeTrainingPatch sizeTrainingPatch 3];
-numClasses          = 5;
+
 encoderDepth        = 4;
-numEpochs           = 5;
+numEpochs           = 1;
 lgraph              = unetLayers(imageSize,numClasses,'EncoderDepth',encoderDepth);
 opts                = trainingOptions(typeEncoder, ...
     'InitialLearnRate',1e-3, ...
@@ -79,4 +79,40 @@ opts                = trainingOptions(typeEncoder, ...
 
 % Train U-Net
 net2                = trainNetwork(trainingData,lgraph,opts);
+save gleasonUnet_2022_08_10_background net2
+%% Segment in one go, max size 2048 x 2048
+% segmentedData                   = semanticseg( currentImageR,net2);
+%% Segment in quarters
+%  Q1                   = semanticseg((currentImageR(4000+1:4000+2048,4000+1:4000+2048)),net2);
+%  Q2                   = semanticseg((currentImageR(4000+1:4000+2048,4000+1+2048:4000+4096)),net2);
+%  Q3                   = semanticseg((currentImageR(4000+1+2048:4000+4096,4000+1:4000+2048)),net2);
+%  Q4                   = semanticseg((currentImageR(4000+1+2048:4000+4096,4000+1+2048:4000+4096)),net2);
+%  segmentedData        = [Q1 Q2; Q3 Q4];
+ 
+%% Segment in blocks of 2048x2048
+[rows,cols,~]           = size(currentImageR);
+segmentedData           = zeros(rows,cols);
+sizeBlock               = 2048;
+ for k1=1:sizeBlock:rows-sizeBlock
+     disp(k1)
+            for k2=1:sizeBlock:cols-sizeBlock
+                
+                rStart          = k1;
+                rFin            = min(rows,k1+sizeBlock-1);
+                cStart          = k2;
+                cFin            = min(cols,k2+sizeBlock-1);
+                rr = round(rStart:rFin);
+                cc = round(cStart:cFin);
+                %rr = k1:k1+sizeBlock-1;
+                %cc = k2:k2+sizeBlock-1;
+                Q1                   = semanticseg(currentImageR(rr,cc,:),net2);
+                result                  = zeros(sizeBlock,sizeBlock);
+                for counterClass=1:numClasses
+                    result = result +(counterClass*(Q1==strcat('T',num2str(counterClass))));
+                end
+                segmentedData(rr,cc) = result;              
+            end
+ end
 
+ %Q1                   = semanticseg((currentImageR(4000+1:2048,4000+1:2048)),net2);
+%%
